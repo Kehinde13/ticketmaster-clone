@@ -1,0 +1,167 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+:root {
+  --background: #ffffff;
+  --surface: #ffffff;
+  --surface-subtle: #f6f7f9;
+  --foreground: #121212;
+  --foreground-secondary: #4b4f56;
+  --foreground-muted: #646a73;
+  --border: #d6d9de;
+  --border-strong: #9499a1;
+  --primary: #026cdf;
+  --primary-hover: #0057b8;
+  --primary-foreground: #ffffff;
+  --link: #026cdf;
+  --focus-ring: #005fcc;
+  --success: #16763f;
+  --warning: #8a5a00;
+  --error: #c52233;
+
+  --font-family-sans: Arial, Helvetica, sans-serif;
+  --page-gutter: 1rem;
+
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --secondary: var(--surface-subtle);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--surface-subtle);
+  --muted-foreground: var(--foreground-muted);
+  --accent: var(--surface-subtle);
+  --accent-foreground: var(--foreground);
+  --destructive: var(--error);
+  --input: var(--border);
+  --ring: var(--focus-ring);
+  --radius: 0.5rem;
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --page-gutter: 1.5rem;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-foreground: var(--foreground);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-link: var(--link);
+  --color-focus-ring: var(--focus-ring);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+
+  --font-sans: var(--font-family-sans);
+
+  --container-app: 80rem;
+  --spacing-gutter: var(--page-gutter);
+  --spacing-section: 3rem;
+  --spacing-control: 3rem;
+  --spacing-card: 1rem;
+
+  --radius-control: 0.5rem;
+  --radius-surface: 0.75rem;
+  --radius-overlay: 1rem;
+
+  --shadow-surface: 0 1px 3px rgb(18 18 18 / 10%);
+  --shadow-overlay: 0 12px 32px rgb(18 18 18 / 18%);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    min-width: 20rem;
+    background: var(--background);
+    font-family: var(--font-family-sans);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  h1,
+  h2,
+  h3 {
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    line-height: 1.25;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    line-height: 1.3;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  a {
+    color: var(--link);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 3px;
+  }
+}
