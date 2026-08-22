@@ -14,6 +14,14 @@ TanStack Query manages client-side server state through the application provider
 
 Vitest and React Testing Library cover unit and component behavior without live infrastructure. Future Playwright coverage will own browser-level App Router behavior and critical user flows, including async Server Components.
 
+Mobile navigation interaction uses local state within a focused Client Component and an accessible modal primitive. It introduces no global state, server dependency, or feature/business logic; the root layout remains a Server Component.
+
+The mobile drawer owns category and global utility navigation. The mobile bottom navigation represents primary application destinations. Its active destination will eventually derive from App Router route state rather than a separate global store.
+
+The desktop shell uses a Server Component-compatible global header with separate utility and primary-category navigation. Mobile and desktop shells share a single responsive visibility boundary while keeping their different information structures independent.
+
+Country/market preference is distinct from event location. The current mobile shell exposes only a static market affordance; a future selector will own switching and persistence, and feature data should consume normalized country codes when that work is introduced.
+
 The App Router manifest owns installability metadata. Service-worker behavior is deferred until caching requirements are known; any future offline policy must distinguish static assets from freshness-sensitive and transactional data.
 
 ## Module boundaries

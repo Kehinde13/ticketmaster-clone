@@ -1,5 +1,8 @@
 import type { Metadata, Viewport } from "next";
 
+import { DesktopHeader } from "@/components/navigation/desktop-header";
+import { MobileBottomNavigation } from "@/components/navigation/mobile-bottom-navigation";
+import { MobileNavigation } from "@/components/navigation/mobile-navigation";
 import "@/lib/env/server";
 
 import "./globals.css";
@@ -28,7 +31,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>{children}</Providers>
+        <DesktopHeader />
+        <MobileNavigation />
+        <div className="pb-[calc(64px+env(safe-area-inset-bottom))] md:pb-0">
+          <Providers>{children}</Providers>
+        </div>
+        <MobileBottomNavigation />
       </body>
     </html>
   );
