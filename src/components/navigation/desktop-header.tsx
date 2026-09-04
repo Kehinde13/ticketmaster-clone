@@ -92,7 +92,7 @@ export function DesktopHeader() {
               <button
                 key={item}
                 type="button"
-                className={`h-11 px-1.5 text-[12px] font-semibold whitespace-nowrap text-white hover:bg-black/10 min-[900px]:text-[13px] ${blueFocusClassName}`}
+                className={`h-11 px-1.5 text-[12px] font-semibold whitespace-nowrap text-white hover:bg-black/10 lg:text-[13px] ${blueFocusClassName}`}
               >
                 {item}
               </button>
@@ -100,7 +100,7 @@ export function DesktopHeader() {
             <button
               type="button"
               aria-label="More navigation options"
-              className={`flex h-11 items-center gap-0.5 px-1.5 text-[12px] font-semibold whitespace-nowrap text-white hover:bg-black/10 min-[900px]:text-[13px] ${blueFocusClassName}`}
+              className={`flex h-11 items-center gap-0.5 px-1.5 text-[12px] font-semibold whitespace-nowrap text-white hover:bg-black/10 lg:text-[13px] ${blueFocusClassName}`}
             >
               More
               <ChevronDown aria-hidden="true" className="size-3.5" />
@@ -111,7 +111,7 @@ export function DesktopHeader() {
             <button
               type="button"
               aria-label="Search"
-              className={`flex size-11 items-center justify-center border border-white/50 text-white hover:bg-black/10 min-[900px]:h-[42px] min-[900px]:w-[244px] min-[900px]:justify-between min-[900px]:px-2 ${blueFocusClassName}`}
+              className={`flex size-11 items-center justify-center border border-white/50 text-white hover:bg-black/10 min-[900px]:h-[42px] min-[900px]:w-[200px] min-[900px]:justify-between min-[900px]:px-2 min-[944px]:w-[244px] ${blueFocusClassName}`}
             >
               <span className="hidden min-w-0 flex-col items-start min-[900px]:flex">
                 <span className="text-[9px] leading-[11px] font-semibold uppercase">
@@ -130,7 +130,9 @@ export function DesktopHeader() {
               className={`flex h-11 items-center gap-1.5 px-1.5 text-[13px] font-normal whitespace-nowrap text-white hover:bg-black/10 ${blueFocusClassName}`}
             >
               <UserRound aria-hidden="true" className="size-5" strokeWidth={1.75} />
-              <span className="hidden min-[900px]:inline">Sign In/Register</span>
+              <span className="hidden min-[1100px]:inline">
+                Sign In/Register
+              </span>
             </button>
           </div>
         </div>
