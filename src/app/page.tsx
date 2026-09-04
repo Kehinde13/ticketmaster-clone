@@ -1,7 +1,10 @@
+import { DiscoverSearchFilterShell } from "@/components/filters/discover-search-filter-shell";
+
 export default function Home() {
   return (
-    <main className="bg-background text-foreground flex min-h-screen items-center justify-center px-gutter">
-      <h1 className="text-3xl font-bold tracking-tight">Ticketmaster Clone</h1>
+    <main className="min-h-screen bg-background text-foreground">
+      <DiscoverSearchFilterShell />
+      <div aria-hidden="true" className="min-h-80" />
     </main>
   );
 }
