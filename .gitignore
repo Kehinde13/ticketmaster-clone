@@ -8,6 +8,11 @@
 # production
 /build
 
+# Playwright output (committed baselines live under tests/visual/__screenshots__)
+/playwright-report/
+/test-results/
+/blob-report/
+
 # generated Prisma Client
 /src/generated/prisma/
 
