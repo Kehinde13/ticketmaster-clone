@@ -12,6 +12,9 @@ test("homepage responsive shell matches its visual baseline", async ({
   await expect(
     page.getByRole("heading", { name: "Popular Near You" }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Entertainment Guides" }),
+  ).toBeVisible();
 
   await expect(page).toHaveScreenshot("homepage.png", { fullPage: true });
 });
