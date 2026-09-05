@@ -20,3 +20,9 @@ Researched on 2026-09-05.
 ## Implementation comparison
 
 A static comparison of the first layout values found that 16:9 media looked too shallow, mobile cards were too wide, and metadata spacing was too loose. The refinement uses a 3:2 image ratio, caps mobile cards at 280 px with a 72vw basis, and tightens the category/date/title/venue stack to 4–12 px gaps. Exact current imagery and viewport-specific behavior remain approximations.
+
+## Phase 3.5 comparison
+
+- Current public output confirms the order Concerts, Sports, Arts, Theater & Comedy, then Family; the implementation now matches it.
+- The first pass lacked per-row `See All` treatment and made later rows feel disconnected. Each row now has one aligned, category-labeled non-interactive shell while routing is deferred.
+- Initial vertical spacing made four rows too tall. Consistent 40 px mobile and 48 px desktop row gaps preserve grouping without stretching the section.

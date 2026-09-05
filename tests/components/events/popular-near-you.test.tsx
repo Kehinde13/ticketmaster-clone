@@ -4,8 +4,8 @@ import { describe, expect, it } from "vitest";
 import { PopularNearYou } from "@/components/events/popular-near-you";
 
 describe("PopularNearYou", () => {
-  it("renders the first Popular Near You row with six events", () => {
-    render(<PopularNearYou />);
+  it("renders all four event rows in the current order", () => {
+    const { container } = render(<PopularNearYou />);
 
     const heading = screen.getByRole("heading", {
       level: 2,
@@ -14,20 +14,33 @@ describe("PopularNearYou", () => {
     const section = heading.closest("section");
 
     expect(section).not.toBeNull();
-    expect(
-      within(section!).getByRole("heading", { level: 3, name: "Concerts" }),
-    ).toBeInTheDocument();
-    expect(within(section!).getAllByRole("article")).toHaveLength(6);
+    const categoryHeadings = within(section!).getAllByRole("heading", {
+      level: 3,
+    });
+
+    expect(categoryHeadings.map((category) => category.textContent)).toEqual([
+      "Concerts",
+      "Sports",
+      "Arts, Theater & Comedy",
+      "Family",
+    ]);
+    expect(within(section!).getAllByRole("article")).toHaveLength(24);
+    expect(within(section!).getAllByText("See All")).toHaveLength(4);
+
+    const semanticIds = Array.from(
+      container.querySelectorAll('[id^="event-card-"][id$="-title"]'),
+      (element) => element.id,
+    );
+
+    expect(new Set(semanticIds).size).toBe(24);
   });
 
-  it("renders unique representative event names", () => {
+  it("renders representative events from every category", () => {
     render(<PopularNearYou />);
 
-    const names = screen
-      .getAllByRole("heading", { level: 4 })
-      .map((heading) => heading.textContent);
-
-    expect(names).toHaveLength(6);
-    expect(new Set(names).size).toBe(names.length);
+    expect(screen.getByText("Midnight Echo Tour")).toBeInTheDocument();
+    expect(screen.getByText("City Hoops Showdown")).toBeInTheDocument();
+    expect(screen.getByText("Lights of Broadway")).toBeInTheDocument();
+    expect(screen.getByText("Adventure on Ice")).toBeInTheDocument();
   });
 });
