@@ -37,6 +37,10 @@ The App Router manifest owns installability metadata. Service-worker behavior is
 9. Components are Server Components by default and become Client Components only when interactivity or browser APIs require it.
 10. Application features depend on internal abstractions, not directly on external providers.
 
+## Event provider boundary
+
+`src/types/event.ts` is the client-safe, provider-independent event domain. Server-only provider execution lives under `src/lib/api/events`; provider implementations validate untrusted upstream data and normalize it before returning `Event` values. Raw responses, provider-specific query identifiers, credentials, and database concerns must not cross this boundary into UI code.
+
 ## Foundation top-level areas
 
 `prisma` contains the Prisma schema and is the future home of reviewed migrations; no application models or migrations exist yet. `tests` contains the Vitest unit/component suite organized by application area. Browser-level end-to-end coverage remains deferred to the future Playwright foundation.
