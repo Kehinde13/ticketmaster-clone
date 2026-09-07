@@ -19,7 +19,7 @@ External provider response
   -> application and UI
 ```
 
-Raw provider and HAL response shapes must remain inside the future provider implementation. That implementation must validate untrusted JSON before normalization and must never expose credentials or raw upstream errors to application UI.
+Raw provider and HAL response shapes remain inside the provider implementation, which validates untrusted JSON before normalization. The application endpoint never exposes credentials or raw upstream errors.
 
 ## Contract decisions
 
@@ -44,3 +44,39 @@ Search translation is explicit: keyword, country, city/state/postal, UTC date-ti
 Targeted Zod schemas validate the event fields and HAL page structures actually consumed. Missing `_embedded` events is a valid empty result. A malformed required event ID/name or page fails the whole response; invalid optional URLs, prices, status values, or coordinates are safely dropped or normalized to `null`.
 
 HTTP 401/403, 429, and other failures map to unauthorized, rate-limit, and provider errors. Detail 404 returns `null`. Network/timeout, invalid JSON, and schema failures preserve an internal cause while exposing only safe messages. URLs and errors are never logged, so the `apikey` value is not emitted.
+
+## Application event search endpoint
+
+`GET /api/events` is public and returns `EventSearchResult` directly: `{ events: Event[], pagination: { page, size, totalItems, totalPages, hasNextPage } }`. Successful empty searches return HTTP 200. Only GET is implemented (Next.js supplies HEAD/OPTIONS); no details route exists yet.
+
+The flat URL query is validated with Zod before provider construction or execution, then translated to nested `EventSearchParams.location` and `.classification`. All parameters are scalar. Duplicate parameters, including identical duplicates, and unknown names return HTTP 400. Empty supplied strings are rejected. No unknown parameters reach the provider.
+
+| Parameters | Rules |
+| --- | --- |
+| `keyword` | Trimmed, 1–200 characters |
+| `countryCode` | Two ASCII letters, normalized uppercase |
+| `city` | Trimmed, 1–100 characters |
+| `stateCode`, `postalCode` | Trimmed, 1–20 characters; state code uppercased without restricting searches to US states |
+| `latitude`, `longitude` | Finite decimal numbers, required together; latitude -90–90, longitude -180–180 |
+| `radius`, `radiusUnit` | Radius >0 and <=1000, requires coordinates; unit `miles` (default when radius supplied) or `km`; unit alone rejected |
+| `startDateTime`, `endDateTime` | Valid ISO date-times with seconds and explicit UTC/offset; fractions accepted; normalized to UTC milliseconds; start must not exceed end |
+| `category` | `concerts`, `sports`, `arts-theater-comedy`, or `family` |
+| `segment`, `genre`, `subGenre` | Trimmed, 1–100 characters; a segment conflicting with a category is rejected |
+| `page`, `pageSize` | Decimal integers; default 0/20, page >=0, size 1–200, page * size <1000 |
+
+Pagination defaults and provider limits are shared through `eventSearchLimits`. Numeric exponent/hex forms, blanks, NaN, and Infinity are rejected. The route does not construct Ticketmaster queries; the provider retains that responsibility.
+
+Errors use `{ error: { code, message, fields? } }`. Validation fields contain only known field names and fixed messages; unknown query names use `query`. Supplied values and Zod internals are never echoed.
+
+| Failure | HTTP | Public code |
+| --- | --- | --- |
+| Invalid query | 400 | `INVALID_SEARCH_PARAMS` |
+| Configuration, upstream authorization, upstream rate limit, network/timeout | 503 | `EVENT_SERVICE_UNAVAILABLE` |
+| Invalid upstream response, provider error, unexpected upstream not-found | 502 | `EVENT_PROVIDER_RESPONSE_ERROR` |
+| Unexpected application exception | 500 | `INTERNAL_ERROR` |
+
+Upstream quota failures represent temporary service unavailability, not a client rate-limit violation. A search-level upstream not-found is treated as a provider failure; a valid empty search remains successful. Missing credentials are caught during provider construction and return the safe 503 response.
+
+All handled responses include JSON content type and `Cache-Control: no-store`; the route is explicitly dynamic. Credentials remain server-only, and error stacks, causes, upstream messages, secret-bearing request URLs, and raw HAL envelopes are never serialized. Route tests mock the provider getter and make zero live API calls.
+
+Request-disconnect propagation is deferred because the existing provider owns its timeout signal. Distributed rate limiting, authentication, persistence, UI integration, and client retry behavior are outside this phase.

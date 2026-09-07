@@ -1,5 +1,12 @@
 import "server-only";
 
+export const eventSearchLimits = {
+  defaultPage: 0,
+  defaultPageSize: 20,
+  maximumPageSize: 200,
+  maximumOffset: 1_000,
+} as const;
+
 import type {
   Event,
   EventSearchParams,

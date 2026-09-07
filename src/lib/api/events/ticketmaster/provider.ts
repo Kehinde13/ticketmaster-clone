@@ -1,6 +1,7 @@
 import "server-only";
 
 import { serverEnv } from "@/lib/env/server";
+import { eventSearchLimits } from "@/lib/api/events/provider";
 import type {
   EventProvider,
   EventProviderError,
@@ -19,9 +20,7 @@ import {
 
 const discoveryBaseUrl = "https://app.ticketmaster.com/discovery/v2/";
 const defaultTimeoutMs = 8_000;
-const defaultPageSize = 20;
-const maximumPageSize = 200;
-const maximumDeepPagingOffset = 1_000;
+const { defaultPageSize, maximumPageSize } = eventSearchLimits;
 const geohashAlphabet = "0123456789bcdefghjkmnpqrstuvwxyz";
 
 type ProviderException = Error & EventProviderError;
@@ -116,7 +115,7 @@ function buildSearchQuery(apiKey: string, params: EventSearchParams) {
     "startDateTime",
   );
   const endDateTime = validateDateTime(params.endDateTime, "endDateTime");
-  const page = params.page ?? 0;
+  const page = params.page ?? eventSearchLimits.defaultPage;
   const pageSize = params.pageSize ?? defaultPageSize;
 
   if (!Number.isInteger(page) || page < 0) {
@@ -129,7 +128,7 @@ function buildSearchQuery(apiKey: string, params: EventSearchParams) {
   ) {
     invalidSearch(`pageSize must be between 1 and ${maximumPageSize}.`);
   }
-  if (page * pageSize >= maximumDeepPagingOffset) {
+  if (page * pageSize >= eventSearchLimits.maximumOffset) {
     invalidSearch("The requested page exceeds Ticketmaster's paging limit.");
   }
   if (
