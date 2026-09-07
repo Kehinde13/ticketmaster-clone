@@ -4,6 +4,11 @@ const serverEnvSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
     .default("development"),
+  TICKETMASTER_API_KEY: z.preprocess(
+    (value) =>
+      typeof value === "string" && value.trim() === "" ? undefined : value,
+    z.string().trim().min(1).optional(),
+  ),
 });
 
 const databaseEnvSchema = z.object({
@@ -29,7 +34,10 @@ function invalidVariableNames(error: z.ZodError) {
   ];
 }
 
-export function parseServerEnv(input: { NODE_ENV?: string }) {
+export function parseServerEnv(input: {
+  NODE_ENV?: string;
+  TICKETMASTER_API_KEY?: string;
+}) {
   const result = serverEnvSchema.safeParse(input);
 
   if (!result.success) {

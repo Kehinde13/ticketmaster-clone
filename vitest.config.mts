@@ -4,6 +4,11 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [tsconfigPaths(), react()],
+  resolve: {
+    alias: {
+      "server-only": "next/dist/compiled/server-only/empty.js",
+    },
+  },
   test: {
     environment: "jsdom",
     include: ["tests/**/*.test.{ts,tsx}"],

@@ -41,6 +41,8 @@ The App Router manifest owns installability metadata. Service-worker behavior is
 
 `src/types/event.ts` is the client-safe, provider-independent event domain. Server-only provider execution lives under `src/lib/api/events`; provider implementations validate untrusted upstream data and normalize it before returning `Event` values. Raw responses, provider-specific query identifiers, credentials, and database concerns must not cross this boundary into UI code.
 
+The Ticketmaster adapter under `src/lib/api/events/ticketmaster` owns its query mapping, Zod response schemas, geohash translation, HTTP behavior, and normalization. It is not imported by the UI; a future server API boundary will be its first application consumer.
+
 ## Foundation top-level areas
 
 `prisma` contains the Prisma schema and is the future home of reviewed migrations; no application models or migrations exist yet. `tests` contains the Vitest unit/component suite organized by application area. Browser-level end-to-end coverage remains deferred to the future Playwright foundation.

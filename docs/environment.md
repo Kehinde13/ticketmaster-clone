@@ -10,6 +10,7 @@ Next.js loads `.env*` files from the project root into `process.env`; files insi
 - Developers put real local values in ignored root files such as `.env.local`. Deployment platforms provide production values through their environment configuration.
 - `src/lib/env/server.ts` validates selected server values with Zod and reports invalid variable names without including their values. Its schema grows only when an integration genuinely requires another variable.
 - `DATABASE_URL` is validated only when the server-only database entry point is imported, so routes that do not use the database remain independent of PostgreSQL.
+- `TICKETMASTER_API_KEY` is optional during ordinary builds and tests, but the server-only Ticketmaster provider rejects construction with a normalized configuration error when no key is available.
 
 ## Adding a variable
 
