@@ -1,4 +1,5 @@
 import { DiscoverHighlights } from "@/components/events/discover-highlights";
+import { DiscoverMore } from "@/components/events/discover-more";
 import { EntertainmentGuides } from "@/components/events/entertainment-guides";
 import { PopularNearYou } from "@/components/events/popular-near-you";
 import { DiscoverCategoryNavigation } from "@/components/filters/discover-category-navigation";
@@ -12,6 +13,7 @@ export default function Home() {
       <DiscoverHighlights />
       <PopularNearYou />
       <EntertainmentGuides />
+      <DiscoverMore />
       <div aria-hidden="true" className="min-h-80" />
     </main>
   );
