@@ -21,6 +21,22 @@ test("homepage responsive shell matches its visual baseline", async ({
   await expect(
     page.getByRole("heading", { name: "Popular Cities" }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Featured", exact: true }),
+  ).toBeVisible();
+
+  const featured = page
+    .getByRole("heading", { name: "Featured", exact: true })
+    .locator("..")
+    .locator("..");
+  for (const label of [
+    "Hotels",
+    "Ticket Deals",
+    "VIP Packages",
+    "Sell on Ticketmaster",
+  ]) {
+    await expect(featured.getByRole("heading", { name: label })).toBeVisible();
+  }
 
   await expect(page).toHaveScreenshot("homepage.png", { fullPage: true });
 });
