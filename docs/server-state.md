@@ -15,4 +15,12 @@ When server prefetching becomes useful, use `QueryClient` â†’ `prefetchQuery` â†
 
 Client query functions should use appropriate HTTP, API, or provider boundaries rather than treating Next.js Server Actions as a general fetching mechanism. Invalidation should follow successful domain mutations and target only affected query data.
 
+Event search options own a canonical `["events", "search", url]` key and pass
+TanStack Query's `AbortSignal` to the client-safe `/api/events` fetcher. Retry is
+disabled explicitly because a 503 may represent configuration, authorization,
+quota, or network failure; the global 60-second stale-time policy remains the
+single source of truth. Server-rendered homepage rows continue to call
+`EventProvider` directly, while future interactive search uses this HTTP query
+layer. URL shaping is client-owned, but validation remains server-authoritative.
+
 Query cache persistence is disabled. Account, ticket, and transactional data require a deliberate security and PWA caching design before any browser persistence is introduced.

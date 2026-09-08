@@ -113,3 +113,9 @@ Normalized `Event.images` are ranked by a provider-independent, HTTPS-only
 selector for the card's 3:2 frame. The chosen image is projected into
 `EventCardData`; missing or failed remote imagery retains the original artwork.
 Next Image permits only `https://s1.ticketm.net/dam/**` provider images.
+
+Future browser-driven searches use the client-safe `/api/events` fetcher rather
+than contacting a provider. It deterministically serializes normalized
+`EventSearchParams`, validates the public response envelope, preserves request
+cancellation, and exposes only the route's safe application error fields. The
+server route remains authoritative for search validation.
