@@ -1,4 +1,5 @@
 import type { Event, EventCardData, EventCategory } from "@/types/event";
+import { selectEventImage } from "@/lib/events/select-event-image";
 
 export const eventCategoryLabels: Readonly<Record<EventCategory, string>> = {
   concerts: "Concerts",
@@ -34,6 +35,7 @@ export function toEventCardData(
   const location = event.venue?.location;
   const parts = [location?.city, location?.stateCode || location?.state];
   const place = parts.filter(Boolean).join(", ");
+  const image = selectEventImage(event.images);
   return {
     id: event.id,
     name: event.name,
@@ -42,5 +44,13 @@ export function toEventCardData(
     location: place || location?.country || location?.countryCode || "Location TBA",
     category: event.classification?.subGenre?.name || event.classification?.genre?.name ||
       event.classification?.segment?.name || eventCategoryLabels[fallbackCategory],
+    image: image
+      ? {
+          src: image.url,
+          alt: event.name,
+          width: image.width,
+          height: image.height,
+        }
+      : null,
   };
 }

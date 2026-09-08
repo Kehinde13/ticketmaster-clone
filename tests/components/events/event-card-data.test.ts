@@ -52,6 +52,7 @@ describe("toEventCardData", () => {
       venue: "Example Arena",
       location: "New York, NY",
       category: "Alternative Rock",
+      image: null,
     });
   });
 
@@ -89,5 +90,25 @@ describe("toEventCardData", () => {
     ["family", "Family"],
   ] as const)("uses the %s row label when classification is missing", (category, label) => {
     expect(toEventCardData(event({ classification: null }), category).category).toBe(label);
+  });
+
+  it("maps only the selected normalized image into presentation data", () => {
+    const mapped = toEventCardData(event({
+      images: [
+        { url: "https://s1.ticketm.net/dam/wide.jpg", width: 1136, height: 639, ratio: "16:9", fallback: false, attribution: null },
+        { url: "https://s1.ticketm.net/dam/card.jpg", width: 640, height: 427, ratio: "3:2", fallback: false, attribution: "Provider" },
+      ],
+    }), "concerts");
+
+    expect(mapped.image).toEqual({
+      src: "https://s1.ticketm.net/dam/card.jpg",
+      alt: "The Example Tour",
+      width: 640,
+      height: 427,
+    });
+  });
+
+  it("maps missing normalized images to null", () => {
+    expect(toEventCardData(event({ images: [] }), "concerts").image).toBeNull();
   });
 });

@@ -176,5 +176,11 @@ export type EventCardData = Readonly<
     dateLabel: string;
     venue: string;
     location: string;
+    image: Readonly<{
+      src: string;
+      alt: string;
+      width: number | null;
+      height: number | null;
+    }> | null;
   }
 >;

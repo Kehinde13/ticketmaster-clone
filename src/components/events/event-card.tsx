@@ -1,3 +1,4 @@
+import { EventCardImage } from "@/components/events/event-card-image";
 import type { EventCardData } from "@/types/event";
 
 type EventCardProps = {
@@ -7,21 +8,31 @@ type EventCardProps = {
 
 export function EventCard({ event, artworkClassName }: EventCardProps) {
   const titleId = `event-card-${event.id}-title`;
+  const fallbackArtwork = (
+    <div
+      data-testid="event-card-fallback-artwork"
+      aria-hidden="true"
+      className={`absolute inset-0 bg-gradient-to-br ${artworkClassName}`}
+    >
+      <div className="absolute top-[18%] -left-[8%] h-[38%] w-[72%] -rotate-6 rounded-full border-[16px] border-white/15" />
+      <div className="absolute -right-[6%] -bottom-[30%] size-[70%] rotate-12 rounded-[28px] bg-black/15" />
+      <div className="absolute right-4 bottom-4 flex items-end gap-1 opacity-70">
+        <span className="h-7 w-1.5 rounded-full bg-white" />
+        <span className="h-11 w-1.5 rounded-full bg-white" />
+        <span className="h-8 w-1.5 rounded-full bg-white" />
+        <span className="h-14 w-1.5 rounded-full bg-white" />
+      </div>
+    </div>
+  );
 
   return (
     <article aria-labelledby={titleId} className="min-w-0">
-      <div
-        aria-hidden="true"
-        className={`relative aspect-[3/2] overflow-hidden rounded-[4px] bg-gradient-to-br ${artworkClassName}`}
-      >
-        <div className="absolute top-[18%] -left-[8%] h-[38%] w-[72%] -rotate-6 rounded-full border-[16px] border-white/15" />
-        <div className="absolute -right-[6%] -bottom-[30%] size-[70%] rotate-12 rounded-[28px] bg-black/15" />
-        <div className="absolute right-4 bottom-4 flex items-end gap-1 opacity-70">
-          <span className="h-7 w-1.5 rounded-full bg-white" />
-          <span className="h-11 w-1.5 rounded-full bg-white" />
-          <span className="h-8 w-1.5 rounded-full bg-white" />
-          <span className="h-14 w-1.5 rounded-full bg-white" />
-        </div>
+      <div className="relative aspect-[3/2] overflow-hidden rounded-[4px]">
+        {event.image ? (
+          <EventCardImage image={event.image} fallback={fallbackArtwork} />
+        ) : (
+          fallbackArtwork
+        )}
       </div>
 
       <div className="pt-3">

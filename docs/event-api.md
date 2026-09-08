@@ -109,3 +109,7 @@ This avoids an unnecessary HTTP round trip through the application's own route
 while keeping provider selection, normalization, and credentials server-side.
 All four Popular Near You rows pass an application category to this loader and
 render normalized `Event[]` through the shared `EventCardData` projection.
+Normalized `Event.images` are ranked by a provider-independent, HTTPS-only
+selector for the card's 3:2 frame. The chosen image is projected into
+`EventCardData`; missing or failed remote imagery retains the original artwork.
+Next Image permits only `https://s1.ticketm.net/dam/**` provider images.
