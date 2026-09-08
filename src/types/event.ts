@@ -147,6 +147,27 @@ export function createEventId(
   return `${provider}:${providerEventId}`;
 }
 
+/** Parse a decoded application ID; URL decoding belongs to the HTTP framework. */
+export function parseEventId(id: unknown): Readonly<{
+  provider: EventProviderName;
+  providerEventId: string;
+}> | null {
+  if (typeof id !== "string" || id.length > 512) return null;
+
+  const separator = id.indexOf(":");
+  const provider = id.slice(0, separator);
+  const providerEventId = id.slice(separator + 1);
+  if (
+    separator < 0 ||
+    provider !== "ticketmaster" ||
+    !/^[A-Za-z0-9._~!$&'()*+,;=:@%/?-]+$/.test(providerEventId)
+  ) {
+    return null;
+  }
+
+  return { provider, providerEventId };
+}
+
 // Temporary Phase 3 view model. Structured identity and name are inherited from
 // Event; presentation labels remain until real normalized events feed the cards.
 export type EventCardData = Readonly<

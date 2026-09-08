@@ -47,7 +47,7 @@ HTTP 401/403, 429, and other failures map to unauthorized, rate-limit, and provi
 
 ## Application event search endpoint
 
-`GET /api/events` is public and returns `EventSearchResult` directly: `{ events: Event[], pagination: { page, size, totalItems, totalPages, hasNextPage } }`. Successful empty searches return HTTP 200. Only GET is implemented (Next.js supplies HEAD/OPTIONS); no details route exists yet.
+`GET /api/events` is public and returns `EventSearchResult` directly: `{ events: Event[], pagination: { page, size, totalItems, totalPages, hasNextPage } }`. Successful empty searches return HTTP 200. Only GET is implemented (Next.js supplies HEAD/OPTIONS).
 
 The flat URL query is validated with Zod before provider construction or execution, then translated to nested `EventSearchParams.location` and `.classification`. All parameters are scalar. Duplicate parameters, including identical duplicates, and unknown names return HTTP 400. Empty supplied strings are rejected. No unknown parameters reach the provider.
 
@@ -80,3 +80,23 @@ Upstream quota failures represent temporary service unavailability, not a client
 All handled responses include JSON content type and `Cache-Control: no-store`; the route is explicitly dynamic. Credentials remain server-only, and error stacks, causes, upstream messages, secret-bearing request URLs, and raw HAL envelopes are never serialized. Route tests mock the provider getter and make zero live API calls.
 
 Request-disconnect propagation is deferred because the existing provider owns its timeout signal. Distributed rate limiting, authentication, persistence, UI integration, and client retry behavior are outside this phase.
+
+## Application event details endpoint
+
+`GET /api/events/:id` accepts a normalized application event ID, for example `/api/events/ticketmaster%3Aevent-123`. Success is HTTP 200 with `{ event: Event }`; nullable venue, price, classification, and other optional metadata remain valid. This endpoint is public. Only GET is implemented; Next.js supplies HEAD/OPTIONS.
+
+The client-safe `parseEventId` helper matches the existing `createEventId` format: `ticketmaster:<providerEventId>`. It splits at the first colon, permits only the supported `ticketmaster` provider, and returns the unmodified provider ID. The route selects the existing provider getter and calls `getEventById(providerEventId)`; it does not construct upstream URLs or change the provider contract.
+
+Decoded IDs are limited to 512 characters total. Provider IDs must be nonempty ASCII letters/digits or URI punctuation (`._~!$&'()*+,;=:@%/?-`); whitespace, control characters, backslashes, and other characters are rejected. Malformed IDs, missing separators, unknown providers, and excessive lengths return HTTP 400 `INVALID_EVENT_ID` before provider construction.
+
+Callers should encode the entire normalized ID as one path segment. Next.js decodes route parameters once; the parser never decodes again. Literal percent sequences in provider IDs stay literal (e.g. `%252F` in the URL becomes `%2F` in the provider ID). A Proxy guard scoped to `/api/events/:id` validates transport encoding without rewriting the path. It returns the safe HTTP 400 `INVALID_EVENT_ID` JSON response for malformed escapes/UTF-8 before Next.js route decoding, which otherwise produced a framework 500 in production verification. An absent path segment belongs to the existing search endpoint.
+
+| Failure | HTTP | Public code |
+| --- | --- | --- |
+| Invalid normalized ID | 400 | `INVALID_EVENT_ID` |
+| Provider returns null or throws not-found | 404 | `EVENT_NOT_FOUND` |
+| Configuration, upstream authorization, upstream rate limit, network/timeout | 503 | `EVENT_SERVICE_UNAVAILABLE` |
+| Invalid upstream response or provider error | 502 | `EVENT_PROVIDER_RESPONSE_ERROR` |
+| Unexpected application exception | 500 | `INTERNAL_ERROR` |
+
+Errors use `{ error: { code, message } }` with fixed public messages. Every handled response includes JSON content type and `Cache-Control: no-store`; the route is explicitly dynamic. Credentials stay server-only. No upstream request URL, error message, stack, cause, or raw Ticketmaster response is serialized or logged. Event URLs in successful normalized data are public event-page URLs. Route tests mock the provider boundary and make no live calls. Event Details UI and client data integration remain deferred.

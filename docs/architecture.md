@@ -43,6 +43,8 @@ The App Router manifest owns installability metadata. Service-worker behavior is
 
 The Ticketmaster adapter under `src/lib/api/events/ticketmaster` owns its query mapping, Zod response schemas, geohash translation, HTTP behavior, and normalization. Public search follows `/api/events` -> Zod query validation -> `EventProvider` -> normalized `EventSearchResult`. A single server-only getter selects the provider. The Discover UI does not consume this endpoint yet.
 
+Event details follow `GET /api/events/[id]` -> client-safe normalized ID parsing -> provider selection -> `EventProvider.getEventById` -> `{ event: Event }`. Missing events return a safe 404; the UI is not connected yet.
+
 ## Foundation top-level areas
 
 `prisma` contains the Prisma schema and is the future home of reviewed migrations; no application models or migrations exist yet. `tests` contains the Vitest unit/component suite organized by application area. Browser-level end-to-end coverage remains deferred to the future Playwright foundation.
