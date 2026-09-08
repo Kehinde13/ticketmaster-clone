@@ -1,7 +1,11 @@
 import { render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { PopularNearYou } from "@/components/events/popular-near-you";
+
+vi.mock("@/components/events/popular-concerts", () => ({
+  PopularConcerts: () => <article aria-label="Live concert">Live Concert</article>,
+}));
 
 describe("PopularNearYou", () => {
   it("renders all four event rows in the current order", () => {
@@ -24,7 +28,7 @@ describe("PopularNearYou", () => {
       "Arts, Theater & Comedy",
       "Family",
     ]);
-    expect(within(section!).getAllByRole("article")).toHaveLength(24);
+    expect(within(section!).getAllByRole("article")).toHaveLength(19);
     expect(within(section!).getAllByText("See All")).toHaveLength(4);
 
     const semanticIds = Array.from(
@@ -32,13 +36,13 @@ describe("PopularNearYou", () => {
       (element) => element.id,
     );
 
-    expect(new Set(semanticIds).size).toBe(24);
+    expect(new Set(semanticIds).size).toBe(18);
   });
 
   it("renders representative events from every category", () => {
     render(<PopularNearYou />);
 
-    expect(screen.getByText("Midnight Echo Tour")).toBeInTheDocument();
+    expect(screen.getByText("Live Concert")).toBeInTheDocument();
     expect(screen.getByText("City Hoops Showdown")).toBeInTheDocument();
     expect(screen.getByText("Lights of Broadway")).toBeInTheDocument();
     expect(screen.getByText("Adventure on Ice")).toBeInTheDocument();

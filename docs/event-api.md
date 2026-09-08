@@ -100,3 +100,10 @@ Callers should encode the entire normalized ID as one path segment. Next.js deco
 | Unexpected application exception | 500 | `INTERNAL_ERROR` |
 
 Errors use `{ error: { code, message } }` with fixed public messages. Every handled response includes JSON content type and `Cache-Control: no-store`; the route is explicitly dynamic. Credentials stay server-only. No upstream request URL, error message, stack, cause, or raw Ticketmaster response is serialized or logged. Event URLs in successful normalized data are public event-page URLs. Route tests mock the provider boundary and make no live calls. Event Details UI and client data integration remain deferred.
+
+## Server-rendered Discover integration
+
+Server-rendered Discover content calls `EventProvider` directly through a small
+server-only loader. Browser and future client integrations use `/api/events`.
+This avoids an unnecessary HTTP round trip through the application's own route
+while keeping provider selection, normalization, and credentials server-side.

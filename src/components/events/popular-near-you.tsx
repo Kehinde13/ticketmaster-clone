@@ -1,79 +1,8 @@
-import { EventCard } from "@/components/events/event-card";
-import type { EventCardData } from "@/types/event";
+import { Suspense, type ReactNode } from "react";
 
-type RepresentativeEvent = {
-  event: EventCardData;
-  artworkClassName: string;
-};
-
-const concertEvents: readonly RepresentativeEvent[] = [
-  {
-    event: {
-      id: "midnight-echo-tour",
-      name: "Midnight Echo Tour",
-      category: "Alternative Rock",
-      dateLabel: "FRI, OCT 9 • 8:00 PM",
-      venue: "Harbor Arena",
-      location: "Chicago, IL",
-    },
-    artworkClassName: "from-[#171042] via-[#5339a6] to-[#ce52ab]",
-  },
-  {
-    event: {
-      id: "northern-lights-live",
-      name: "Northern Lights Live",
-      category: "Pop",
-      dateLabel: "SAT, OCT 17 • 7:30 PM",
-      venue: "Riverside Pavilion",
-      location: "Austin, TX",
-    },
-    artworkClassName: "from-[#00335f] via-[#006ca8] to-[#31c4d7]",
-  },
-  {
-    event: {
-      id: "city-sounds-festival",
-      name: "City Sounds Festival",
-      category: "Music Festival",
-      dateLabel: "SUN, OCT 25 • 2:00 PM",
-      venue: "Lakeside Park",
-      location: "Denver, CO",
-    },
-    artworkClassName: "from-[#7c2415] via-[#d05425] to-[#f6b641]",
-  },
-  {
-    event: {
-      id: "blue-room-sessions",
-      name: "The Blue Room Sessions",
-      category: "R&B",
-      dateLabel: "THU, NOV 5 • 8:00 PM",
-      venue: "The Grand Hall",
-      location: "New York, NY",
-    },
-    artworkClassName: "from-[#091d62] via-[#174db2] to-[#7678ed]",
-  },
-  {
-    event: {
-      id: "open-road-live",
-      name: "Open Road Live",
-      category: "Country",
-      dateLabel: "SAT, NOV 14 • 7:00 PM",
-      venue: "Canyon Amphitheater",
-      location: "Phoenix, AZ",
-    },
-    artworkClassName: "from-[#3b3114] via-[#88711d] to-[#e4b644]",
-  },
-  {
-    event: {
-      id: "electric-nights",
-      name: "Electric Nights",
-      category: "Dance/Electronic",
-      dateLabel: "FRI, NOV 20 • 9:00 PM",
-      venue: "Bayfront Center",
-      location: "Miami, FL",
-    },
-    artworkClassName: "from-[#321052] via-[#8b1b8c] to-[#e74477]",
-  },
-];
+import { EventTrack, type RepresentativeEvent } from "@/components/events/event-track";
+import { PopularConcerts } from "@/components/events/popular-concerts";
+import { LoadingState } from "@/components/ui/loading-state";
 
 const sportsEvents: readonly RepresentativeEvent[] = [
   {
@@ -283,19 +212,18 @@ const familyEvents: readonly RepresentativeEvent[] = [
 ];
 
 const eventGroups = [
-  { title: "Concerts", events: concertEvents },
   { title: "Sports", events: sportsEvents },
   { title: "Arts, Theater & Comedy", events: artsEvents },
   { title: "Family", events: familyEvents },
 ] as const;
 
-type EventRowProps = (typeof eventGroups)[number];
+type EventRowProps = { title: string; children: ReactNode };
 
-function EventRow({ title, events }: EventRowProps) {
+function EventRow({ title, children }: EventRowProps) {
   const headingId = `popular-${title.toLowerCase().replaceAll(/[^a-z]+/g, "-")}-heading`;
 
   return (
-    <section aria-labelledby={headingId}>
+    <section aria-labelledby={headingId} className="@container">
       <div className="mb-4 flex items-start justify-between gap-4 md:mb-5 md:items-center">
         <h3
           id={headingId}
@@ -311,16 +239,7 @@ function EventRow({ title, events }: EventRowProps) {
         </span>
       </div>
 
-      <ul className="flex touch-pan-x snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] md:gap-4 [&::-webkit-scrollbar]:hidden">
-        {events.map(({ event, artworkClassName }) => (
-          <li
-            key={event.id}
-            className="max-w-[280px] shrink-0 basis-[72vw] snap-start md:max-w-none md:basis-[calc((100%-2rem)/3)] lg:basis-[calc((100%-3rem)/4)]"
-          >
-            <EventCard event={event} artworkClassName={artworkClassName} />
-          </li>
-        ))}
-      </ul>
+      {children}
     </section>
   );
 }
@@ -339,8 +258,20 @@ export function PopularNearYou() {
           Popular Near You
         </h2>
         <div className="mt-5 space-y-10 md:mt-6 md:space-y-12">
+          <EventRow title="Concerts">
+            <div
+              data-testid="popular-concerts-results"
+              className="grid min-w-0 items-center min-h-[calc(min(72vw,280px)*2/3+104px)] md:min-h-[calc((100cqw-2rem)/3*2/3+104px)] lg:min-h-[calc((100cqw-3rem)/4*2/3+104px)]"
+            >
+              <Suspense fallback={<LoadingState compact message="Loading concerts…" />}>
+                <PopularConcerts />
+              </Suspense>
+            </div>
+          </EventRow>
           {eventGroups.map((group) => (
-            <EventRow key={group.title} {...group} />
+            <EventRow key={group.title} title={group.title}>
+              <EventTrack events={group.events} />
+            </EventRow>
           ))}
         </div>
       </div>

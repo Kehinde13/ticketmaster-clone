@@ -1,0 +1,84 @@
+import { describe, expect, it } from "vitest";
+
+import { toEventCardData } from "@/components/events/event-card-data";
+import type { Event } from "@/types/event";
+
+function event(overrides: Partial<Event> = {}): Event {
+  return {
+    id: "ticketmaster:event-1",
+    provider: "ticketmaster",
+    providerEventId: "event-1",
+    name: "The Example Tour",
+    url: null,
+    images: [],
+    dates: {
+      start: { localDate: "2026-09-12", localTime: "20:30:00", utcDateTime: null },
+      end: null,
+      timezone: "America/New_York",
+      dateTbd: false,
+      dateTba: false,
+      timeTba: false,
+      noSpecificTime: false,
+      endApproximate: false,
+      spansMultipleDays: false,
+    },
+    venue: {
+      id: "venue-1",
+      name: "Example Arena",
+      timezone: "America/New_York",
+      location: {
+        addressLines: [], city: "New York", state: "New York", stateCode: "NY",
+        country: "United States", countryCode: "US", postalCode: null,
+        latitude: null, longitude: null,
+      },
+    },
+    classification: {
+      segment: { providerId: null, name: "Music" },
+      genre: { providerId: null, name: "Rock" },
+      subGenre: { providerId: null, name: "Alternative Rock" },
+    },
+    priceRange: null,
+    status: "onsale",
+    ...overrides,
+  };
+}
+
+describe("toEventCardData", () => {
+  it("maps complete normalized event identity and presentation fields", () => {
+    expect(toEventCardData(event())).toEqual({
+      id: "ticketmaster:event-1",
+      name: "The Example Tour",
+      dateLabel: "SAT, SEP 12 • 8:30 PM",
+      venue: "Example Arena",
+      location: "New York, NY",
+      category: "Alternative Rock",
+    });
+  });
+
+  it("keeps a date-only value stable and does not fabricate a time", () => {
+    const mapped = toEventCardData(event({
+      dates: { ...event().dates, start: { localDate: "2026-01-01", localTime: null, utcDateTime: null } },
+    }));
+    expect(mapped.dateLabel).toBe("THU, JAN 1");
+  });
+
+  it("renders deliberate TBD date and time labels", () => {
+    expect(toEventCardData(event({ dates: { ...event().dates, timeTba: true } })).dateLabel)
+      .toBe("SAT, SEP 12 • TIME TBA");
+    expect(toEventCardData(event({ dates: { ...event().dates, dateTbd: true } })).dateLabel)
+      .toBe("DATE TBA");
+  });
+
+  it("uses safe venue, location, and category fallbacks without dangling punctuation", () => {
+    const partialVenue = event().venue;
+    expect(partialVenue).not.toBeNull();
+    if (!partialVenue) throw new Error("Fixture venue is required.");
+    const mapped = toEventCardData(event({
+      venue: { ...partialVenue, name: "", location: { ...partialVenue.location, city: "Austin", state: null, stateCode: null } },
+      classification: null,
+    }));
+    expect(mapped.venue).toBe("Venue TBA");
+    expect(mapped.location).toBe("Austin");
+    expect(mapped.category).toBe("Concerts");
+  });
+});

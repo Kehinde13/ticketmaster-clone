@@ -38,5 +38,20 @@ test("homepage responsive shell matches its visual baseline", async ({
     await expect(featured.getByRole("heading", { name: label })).toBeVisible();
   }
 
-  await expect(page).toHaveScreenshot("homepage.png", { fullPage: true });
+  const concerts = page.getByTestId("popular-concerts-results");
+  await expect(concerts).toBeVisible();
+  const track = await concerts.boundingBox();
+  expect(track).not.toBeNull();
+  if (!track) throw new Error("Concerts result region has no layout box.");
+  expect(track.width).toBeGreaterThan(250);
+  expect(track.height).toBeGreaterThan(200);
+  expect(track.height).toBeLessThan(400);
+  const viewport = page.viewportSize();
+  if (!viewport) throw new Error("Visual project requires a viewport.");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth))
+    .toBeLessThanOrEqual(viewport.width);
+  await expect(page).toHaveScreenshot("homepage.png", {
+    fullPage: true,
+    mask: [concerts],
+  });
 });

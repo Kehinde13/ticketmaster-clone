@@ -53,7 +53,9 @@ export default defineConfig({
         command:
           "npm run build && npm run start -- --hostname 127.0.0.1 --port 3136",
         url: localBaseUrl,
-        reuseExistingServer: !process.env.CI,
+        // No live provider calls during visual regression, even with a local key.
+        env: { TICKETMASTER_API_KEY: "" },
+        reuseExistingServer: false,
         timeout: 120_000,
       },
 });
