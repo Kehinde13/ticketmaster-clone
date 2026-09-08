@@ -1,11 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { loadPopularConcertEvents } from "@/lib/api/events/discover";
+import { loadPopularEvents } from "@/lib/api/events/discover";
 import type { EventProvider } from "@/lib/api/events/provider";
 import type { EventSearchResult } from "@/types/event";
 
-describe("loadPopularConcertEvents", () => {
-  it("requests the first six normalized US concert events and returns them unchanged", async () => {
+describe("loadPopularEvents", () => {
+  it.each(["concerts", "sports", "arts-theater-comedy", "family"] as const)(
+    "requests the first six normalized US %s events and returns them unchanged",
+    async (category) => {
     const result: EventSearchResult = {
       events: [],
       pagination: { page: 0, size: 6, totalItems: 0, totalPages: 0, hasNextPage: false },
@@ -16,12 +18,13 @@ describe("loadPopularConcertEvents", () => {
       getEventById: vi.fn<EventProvider["getEventById"]>(),
     };
 
-    await expect(loadPopularConcertEvents(provider)).resolves.toBe(result.events);
+    await expect(loadPopularEvents(category, provider)).resolves.toBe(result.events);
     expect(searchEvents).toHaveBeenCalledExactlyOnceWith({
       countryCode: "US",
-      category: "concerts",
+      category,
       page: 0,
       pageSize: 6,
     });
-  });
+    },
+  );
 });

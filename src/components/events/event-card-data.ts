@@ -1,4 +1,11 @@
-import type { Event, EventCardData } from "@/types/event";
+import type { Event, EventCardData, EventCategory } from "@/types/event";
+
+export const eventCategoryLabels: Readonly<Record<EventCategory, string>> = {
+  concerts: "Concerts",
+  sports: "Sports",
+  "arts-theater-comedy": "Arts, Theater & Comedy",
+  family: "Family",
+};
 
 const dayFormatter = new Intl.DateTimeFormat("en-US", {
   weekday: "short", month: "short", day: "numeric", timeZone: "UTC",
@@ -20,7 +27,10 @@ function dateLabel({ dates }: Event): string {
   return Number.isFinite(time.getTime()) ? `${day} • ${timeFormatter.format(time)}` : day;
 }
 
-export function toEventCardData(event: Event): EventCardData {
+export function toEventCardData(
+  event: Event,
+  fallbackCategory: EventCategory,
+): EventCardData {
   const location = event.venue?.location;
   const parts = [location?.city, location?.stateCode || location?.state];
   const place = parts.filter(Boolean).join(", ");
@@ -31,6 +41,6 @@ export function toEventCardData(event: Event): EventCardData {
     venue: event.venue?.name || "Venue TBA",
     location: place || location?.country || location?.countryCode || "Location TBA",
     category: event.classification?.subGenre?.name || event.classification?.genre?.name ||
-      event.classification?.segment?.name || "Concerts",
+      event.classification?.segment?.name || eventCategoryLabels[fallbackCategory],
   };
 }

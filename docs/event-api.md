@@ -107,3 +107,5 @@ Server-rendered Discover content calls `EventProvider` directly through a small
 server-only loader. Browser and future client integrations use `/api/events`.
 This avoids an unnecessary HTTP round trip through the application's own route
 while keeping provider selection, normalization, and credentials server-side.
+All four Popular Near You rows pass an application category to this loader and
+render normalized `Event[]` through the shared `EventCardData` projection.

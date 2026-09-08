@@ -45,7 +45,7 @@ function event(overrides: Partial<Event> = {}): Event {
 
 describe("toEventCardData", () => {
   it("maps complete normalized event identity and presentation fields", () => {
-    expect(toEventCardData(event())).toEqual({
+    expect(toEventCardData(event(), "concerts")).toEqual({
       id: "ticketmaster:event-1",
       name: "The Example Tour",
       dateLabel: "SAT, SEP 12 • 8:30 PM",
@@ -58,14 +58,14 @@ describe("toEventCardData", () => {
   it("keeps a date-only value stable and does not fabricate a time", () => {
     const mapped = toEventCardData(event({
       dates: { ...event().dates, start: { localDate: "2026-01-01", localTime: null, utcDateTime: null } },
-    }));
+    }), "concerts");
     expect(mapped.dateLabel).toBe("THU, JAN 1");
   });
 
   it("renders deliberate TBD date and time labels", () => {
-    expect(toEventCardData(event({ dates: { ...event().dates, timeTba: true } })).dateLabel)
+    expect(toEventCardData(event({ dates: { ...event().dates, timeTba: true } }), "concerts").dateLabel)
       .toBe("SAT, SEP 12 • TIME TBA");
-    expect(toEventCardData(event({ dates: { ...event().dates, dateTbd: true } })).dateLabel)
+    expect(toEventCardData(event({ dates: { ...event().dates, dateTbd: true } }), "concerts").dateLabel)
       .toBe("DATE TBA");
   });
 
@@ -76,9 +76,18 @@ describe("toEventCardData", () => {
     const mapped = toEventCardData(event({
       venue: { ...partialVenue, name: "", location: { ...partialVenue.location, city: "Austin", state: null, stateCode: null } },
       classification: null,
-    }));
+    }), "concerts");
     expect(mapped.venue).toBe("Venue TBA");
     expect(mapped.location).toBe("Austin");
     expect(mapped.category).toBe("Concerts");
+  });
+
+  it.each([
+    ["concerts", "Concerts"],
+    ["sports", "Sports"],
+    ["arts-theater-comedy", "Arts, Theater & Comedy"],
+    ["family", "Family"],
+  ] as const)("uses the %s row label when classification is missing", (category, label) => {
+    expect(toEventCardData(event({ classification: null }), category).category).toBe(label);
   });
 });

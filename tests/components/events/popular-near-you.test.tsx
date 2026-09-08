@@ -3,8 +3,10 @@ import { describe, expect, it, vi } from "vitest";
 
 import { PopularNearYou } from "@/components/events/popular-near-you";
 
-vi.mock("@/components/events/popular-concerts", () => ({
-  PopularConcerts: () => <article aria-label="Live concert">Live Concert</article>,
+vi.mock("@/components/events/popular-event-row", () => ({
+  PopularEventRow: ({ category }: { category: string }) => (
+    <article aria-label={`${category} live row`}>{category} live row</article>
+  ),
 }));
 
 describe("PopularNearYou", () => {
@@ -18,7 +20,8 @@ describe("PopularNearYou", () => {
     const section = heading.closest("section");
 
     expect(section).not.toBeNull();
-    const categoryHeadings = within(section!).getAllByRole("heading", {
+    if (!section) throw new Error("Popular Near You section is required.");
+    const categoryHeadings = within(section).getAllByRole("heading", {
       level: 3,
     });
 
@@ -28,23 +31,23 @@ describe("PopularNearYou", () => {
       "Arts, Theater & Comedy",
       "Family",
     ]);
-    expect(within(section!).getAllByRole("article")).toHaveLength(19);
-    expect(within(section!).getAllByText("See All")).toHaveLength(4);
+    expect(within(section).getAllByRole("article")).toHaveLength(4);
+    expect(within(section).getAllByText("See All")).toHaveLength(4);
 
     const semanticIds = Array.from(
       container.querySelectorAll('[id^="event-card-"][id$="-title"]'),
       (element) => element.id,
     );
 
-    expect(new Set(semanticIds).size).toBe(18);
+    expect(semanticIds).toHaveLength(0);
   });
 
-  it("renders representative events from every category", () => {
+  it("renders all four rows through the live row architecture", () => {
     render(<PopularNearYou />);
 
-    expect(screen.getByText("Live Concert")).toBeInTheDocument();
-    expect(screen.getByText("City Hoops Showdown")).toBeInTheDocument();
-    expect(screen.getByText("Lights of Broadway")).toBeInTheDocument();
-    expect(screen.getByText("Adventure on Ice")).toBeInTheDocument();
+    expect(screen.getByText("concerts live row")).toBeInTheDocument();
+    expect(screen.getByText("sports live row")).toBeInTheDocument();
+    expect(screen.getByText("arts-theater-comedy live row")).toBeInTheDocument();
+    expect(screen.getByText("family live row")).toBeInTheDocument();
   });
 });
