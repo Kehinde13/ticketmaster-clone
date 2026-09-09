@@ -2,10 +2,15 @@ import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { DesktopHeader } from "@/components/navigation/desktop-header";
+import { CountryProvider } from "@/components/providers/country-provider";
+
+function renderHeader() {
+  return render(<CountryProvider initialCountryCode="US"><DesktopHeader /></CountryProvider>);
+}
 
 describe("DesktopHeader", () => {
   it("renders the desktop banner, branding, and labeled navigation landmarks", () => {
-    render(<DesktopHeader />);
+    renderHeader();
 
     const header = screen.getByRole("banner");
 
@@ -21,7 +26,7 @@ describe("DesktopHeader", () => {
   });
 
   it("renders the supported utility and category controls", () => {
-    render(<DesktopHeader />);
+    renderHeader();
 
     const utility = screen.getByRole("navigation", {
       name: "Utility navigation",
@@ -48,7 +53,7 @@ describe("DesktopHeader", () => {
   });
 
   it("gives shell-only global actions meaningful accessible names", () => {
-    render(<DesktopHeader />);
+    renderHeader();
 
     expect(
       screen.getByRole("button", {

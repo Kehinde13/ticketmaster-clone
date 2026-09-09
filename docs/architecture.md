@@ -18,9 +18,9 @@ Mobile navigation interaction uses local state within a focused Client Component
 
 The mobile drawer owns category and global utility navigation. The mobile bottom navigation represents primary application destinations. Its active destination will eventually derive from App Router route state rather than a separate global store.
 
-The desktop shell uses a Server Component-compatible global header with separate utility and primary-category navigation. Mobile and desktop shells share a single responsive visibility boundary while keeping their different information structures independent.
+The desktop shell uses a narrowly scoped Client Component header for the shared country selector while the root layout remains server-rendered. Mobile and desktop shells share a single responsive visibility boundary while keeping their different information structures independent.
 
-Country/market preference is distinct from event location. The current mobile shell exposes only a static market affordance; a future selector will own switching and persistence, and feature data should consume normalized country codes when that work is introduced.
+Country/market preference is distinct from event location. A validated cookie initializes `CountryProvider` on the server; both global affordances open the shared selector, and keyword search consumes its normalized country code.
 
 The App Router manifest owns installability metadata. Service-worker behavior is deferred until caching requirements are known; any future offline policy must distinguish static assets from freshness-sensitive and transactional data.
 

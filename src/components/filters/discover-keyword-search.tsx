@@ -11,6 +11,7 @@ import type { FormEvent, ReactNode } from "react";
 import { useState } from "react";
 
 import { SearchResults } from "@/components/events/search-results";
+import { useCountry } from "@/components/providers/country-provider";
 import { eventSearchQueryOptions } from "@/lib/queries/event-search";
 
 const focusClassName =
@@ -21,10 +22,11 @@ export function DiscoverKeywordSearch({
 }: Readonly<{ categoryNavigation: ReactNode }>) {
   const [inputValue, setInputValue] = useState("");
   const [submittedKeyword, setSubmittedKeyword] = useState<string | null>(null);
+  const { selectedCountry } = useCountry();
   const query = useQuery({
     ...eventSearchQueryOptions({
       keyword: submittedKeyword ?? undefined,
-      countryCode: "US",
+      countryCode: selectedCountry.code,
       page: 0,
       pageSize: 20,
     }),

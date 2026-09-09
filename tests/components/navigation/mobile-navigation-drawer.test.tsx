@@ -3,6 +3,11 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { MobileNavigation } from "@/components/navigation/mobile-navigation";
+import { CountryProvider } from "@/components/providers/country-provider";
+
+function renderNavigation() {
+  return render(<CountryProvider initialCountryCode="US"><MobileNavigation /></CountryProvider>);
+}
 
 let desktopMatches = false;
 const desktopListeners = new Set<() => void>();
@@ -28,7 +33,7 @@ beforeEach(() => {
 describe("MobileNavigation", () => {
   it("opens the drawer with the observed primary navigation labels", async () => {
     const user = userEvent.setup();
-    render(<MobileNavigation />);
+    renderNavigation();
 
     const trigger = screen.getByRole("button", { name: "Menu" });
 
@@ -50,7 +55,7 @@ describe("MobileNavigation", () => {
 
   it("closes with the close control and restores focus to Menu", async () => {
     const user = userEvent.setup();
-    render(<MobileNavigation />);
+    renderNavigation();
 
     const trigger = screen.getByRole("button", { name: "Menu" });
     await user.click(trigger);
@@ -67,7 +72,7 @@ describe("MobileNavigation", () => {
 
   it("closes with Escape and restores focus to Menu", async () => {
     const user = userEvent.setup();
-    render(<MobileNavigation />);
+    renderNavigation();
 
     const trigger = screen.getByRole("button", { name: "Menu" });
     await user.click(trigger);
@@ -83,7 +88,7 @@ describe("MobileNavigation", () => {
 
   it("closes when the viewport crosses into the desktop breakpoint", async () => {
     const user = userEvent.setup();
-    render(<MobileNavigation />);
+    renderNavigation();
 
     await user.click(screen.getByRole("button", { name: "Menu" }));
     await screen.findByRole("dialog", { name: "Menu" });

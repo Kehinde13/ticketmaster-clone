@@ -1,5 +1,11 @@
+"use client";
+
 import { ChevronDown, Search, UserRound } from "lucide-react";
 import Link from "next/link";
+
+import { CountrySelector } from "@/components/filters/country-selector";
+import { useCountry } from "@/components/providers/country-provider";
+import { CountryFlag } from "@/components/navigation/country-flag";
 
 const utilityItems = ["Hotels", "Sell", "Gift Cards", "Help", "VIP"] as const;
 
@@ -18,20 +24,13 @@ const blueFocusClassName =
   "outline-none focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary";
 
 function DesktopCountryAffordance() {
+  const { selectedCountry } = useCountry();
   return (
-    <button
-      type="button"
-      aria-label="Change country, currently United States"
-      className={`flex h-full items-center gap-1.5 text-[12px] text-white hover:text-white/80 ${darkFocusClassName}`}
-    >
-      <span
-        aria-hidden="true"
-        className="relative size-3.5 overflow-hidden rounded-full border border-white/50 bg-[repeating-linear-gradient(to_bottom,#b22234_0_7.69%,#fff_7.69%_15.38%)]"
-      >
-        <span className="absolute top-0 left-0 h-[54%] w-[53%] bg-[#3c3b6e]" />
-      </span>
-      <span>US</span>
-    </button>
+    <CountrySelector
+      triggerLabel={`Change country, currently ${selectedCountry.name}`}
+      triggerClassName={`flex h-full items-center gap-1.5 text-[12px] text-white hover:text-white/80 ${darkFocusClassName}`}
+      trigger={<><CountryFlag country={selectedCountry} size="desktop" /><span>{selectedCountry.code}</span></>}
+    />
   );
 }
 

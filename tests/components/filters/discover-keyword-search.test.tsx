@@ -5,6 +5,7 @@ import type { ReactElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { DiscoverKeywordSearch } from "@/components/filters/discover-keyword-search";
+import { CountryProvider } from "@/components/providers/country-provider";
 import type { EventSearchResult } from "@/types/event";
 
 const result: EventSearchResult = {
@@ -45,9 +46,9 @@ const result: EventSearchResult = {
   pagination: { page: 0, size: 20, totalItems: 1, totalPages: 1, hasNextPage: false },
 };
 
-function renderSearch(ui: ReactElement = <DiscoverKeywordSearch categoryNavigation={<div>Categories</div>} />) {
+function renderSearch(ui: ReactElement = <DiscoverKeywordSearch categoryNavigation={<div>Categories</div>} />, country = "US") {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>);
+  return render(<CountryProvider initialCountryCode={country}><QueryClientProvider client={client}>{ui}</QueryClientProvider></CountryProvider>);
 }
 
 afterEach(() => vi.unstubAllGlobals());
@@ -140,4 +141,23 @@ describe("DiscoverKeywordSearch", () => {
     expect(screen.queryByRole("heading", { name: /Search Results/ })).not.toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
+
+  it("reruns an active search for a newly selected country", async () => {
+    const user = userEvent.setup();
+    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify(result)));
+    vi.stubGlobal("fetch", fetchMock);
+    renderSearch(<><DiscoverKeywordSearch categoryNavigation={null} /><CountryChange /></>);
+    await user.type(screen.getByRole("searchbox", { name: "Search" }), "Coldplay{Enter}");
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    await user.click(screen.getByRole("button", { name: "Choose GB" }));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    expect(fetchMock.mock.calls[1]?.[0]).toContain("countryCode=GB");
+  });
 });
+
+function CountryChange() {
+  const { setSelectedCountry } = requireCountry();
+  return <button onClick={() => setSelectedCountry("GB")}>Choose GB</button>;
+}
+
+import { useCountry as requireCountry } from "@/components/providers/country-provider";

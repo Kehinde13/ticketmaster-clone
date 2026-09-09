@@ -4,10 +4,11 @@ import type { ReactElement } from "react";
 import { describe, expect, it } from "vitest";
 
 import { DiscoverSearchFilterShell } from "@/components/filters/discover-search-filter-shell";
+import { CountryProvider } from "@/components/providers/country-provider";
 
 function renderShell(ui: ReactElement = <DiscoverSearchFilterShell />) {
   return render(
-    <QueryClientProvider client={new QueryClient()}>{ui}</QueryClientProvider>,
+    <CountryProvider initialCountryCode="US"><QueryClientProvider client={new QueryClient()}>{ui}</QueryClientProvider></CountryProvider>,
   );
 }
 
