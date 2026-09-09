@@ -10,8 +10,9 @@ import { DiscoverSearchFilterShell } from "@/components/filters/discover-search-
 export default function Home() {
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <DiscoverSearchFilterShell />
-      <DiscoverCategoryNavigation />
+      <DiscoverSearchFilterShell
+        categoryNavigation={<DiscoverCategoryNavigation />}
+      />
       <DiscoverHighlights />
       <PopularNearYou />
       <EntertainmentGuides />

@@ -30,7 +30,7 @@ function dateLabel({ dates }: Event): string {
 
 export function toEventCardData(
   event: Event,
-  fallbackCategory: EventCategory,
+  fallbackCategory: EventCategory | "event",
 ): EventCardData {
   const location = event.venue?.location;
   const parts = [location?.city, location?.stateCode || location?.state];
@@ -43,7 +43,8 @@ export function toEventCardData(
     venue: event.venue?.name || "Venue TBA",
     location: place || location?.country || location?.countryCode || "Location TBA",
     category: event.classification?.subGenre?.name || event.classification?.genre?.name ||
-      event.classification?.segment?.name || eventCategoryLabels[fallbackCategory],
+      event.classification?.segment?.name ||
+      (fallbackCategory === "event" ? "Event" : eventCategoryLabels[fallbackCategory]),
     image: image
       ? {
           src: image.url,
