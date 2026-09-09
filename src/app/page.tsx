@@ -6,15 +6,18 @@ import { PopularCities } from "@/components/events/popular-cities";
 import { PopularNearYou } from "@/components/events/popular-near-you";
 import { DiscoverCategoryNavigation } from "@/components/filters/discover-category-navigation";
 import { DiscoverSearchFilterShell } from "@/components/filters/discover-search-filter-shell";
+import { getServerCountry } from "@/lib/countries.server";
 
-export default function Home() {
+export default async function Home() {
+  const country = await getServerCountry();
+
   return (
     <main className="min-h-screen bg-background text-foreground">
       <DiscoverSearchFilterShell
         categoryNavigation={<DiscoverCategoryNavigation />}
       />
       <DiscoverHighlights />
-      <PopularNearYou />
+      <PopularNearYou countryCode={country.code} />
       <EntertainmentGuides />
       <DiscoverMore />
       <PopularCities />

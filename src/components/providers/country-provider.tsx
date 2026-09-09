@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 
@@ -21,14 +22,18 @@ export function CountryProvider({
   initialCountryCode,
   children,
 }: Readonly<{ initialCountryCode: unknown; children: ReactNode }>) {
+  const router = useRouter();
   const [selectedCountry, setCountry] = useState(() =>
     getSupportedCountry(initialCountryCode),
   );
 
   function setSelectedCountry(code: CountryCode) {
     const country = getSupportedCountry(code);
+    if (country.code === selectedCountry.code) return;
+
     setCountry(country);
     document.cookie = `${COUNTRY_COOKIE_NAME}=${country.code}; Path=/; SameSite=Lax; Max-Age=${COUNTRY_COOKIE_MAX_AGE}`;
+    router.refresh();
   }
 
   return (

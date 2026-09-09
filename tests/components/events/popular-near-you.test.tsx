@@ -4,14 +4,16 @@ import { describe, expect, it, vi } from "vitest";
 import { PopularNearYou } from "@/components/events/popular-near-you";
 
 vi.mock("@/components/events/popular-event-row", () => ({
-  PopularEventRow: ({ category }: { category: string }) => (
-    <article aria-label={`${category} live row`}>{category} live row</article>
+  PopularEventRow: ({ category, countryCode }: { category: string; countryCode: string }) => (
+    <article aria-label={`${category} ${countryCode} live row`}>
+      {category} {countryCode} live row
+    </article>
   ),
 }));
 
 describe("PopularNearYou", () => {
   it("renders all four event rows in the current order", () => {
-    const { container } = render(<PopularNearYou />);
+    const { container } = render(<PopularNearYou countryCode="GB" />);
 
     const heading = screen.getByRole("heading", {
       level: 2,
@@ -43,11 +45,11 @@ describe("PopularNearYou", () => {
   });
 
   it("renders all four rows through the live row architecture", () => {
-    render(<PopularNearYou />);
+    render(<PopularNearYou countryCode="GB" />);
 
-    expect(screen.getByText("concerts live row")).toBeInTheDocument();
-    expect(screen.getByText("sports live row")).toBeInTheDocument();
-    expect(screen.getByText("arts-theater-comedy live row")).toBeInTheDocument();
-    expect(screen.getByText("family live row")).toBeInTheDocument();
+    expect(screen.getByText("concerts GB live row")).toBeInTheDocument();
+    expect(screen.getByText("sports GB live row")).toBeInTheDocument();
+    expect(screen.getByText("arts-theater-comedy GB live row")).toBeInTheDocument();
+    expect(screen.getByText("family GB live row")).toBeInTheDocument();
   });
 });

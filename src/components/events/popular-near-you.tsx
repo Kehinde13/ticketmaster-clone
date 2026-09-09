@@ -3,6 +3,7 @@ import { Suspense, type ReactNode } from "react";
 import { eventCategoryLabels } from "@/components/events/event-card-data";
 import { PopularEventRow } from "@/components/events/popular-event-row";
 import { LoadingState } from "@/components/ui/loading-state";
+import type { CountryCode } from "@/lib/countries";
 import type { EventCategory } from "@/types/event";
 
 const categories: readonly EventCategory[] = [
@@ -38,7 +39,7 @@ function EventRowShell({ title, children }: EventRowShellProps) {
   );
 }
 
-export function PopularNearYou() {
+export function PopularNearYou({ countryCode }: Readonly<{ countryCode: CountryCode }>) {
   return (
     <section
       aria-labelledby="popular-near-you-heading"
@@ -68,7 +69,7 @@ export function PopularNearYou() {
                       />
                     )}
                   >
-                    <PopularEventRow category={category} />
+                    <PopularEventRow category={category} countryCode={countryCode} />
                   </Suspense>
                 </div>
               </EventRowShell>

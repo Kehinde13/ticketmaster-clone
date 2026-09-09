@@ -45,33 +45,33 @@ describe("PopularEventRow", () => {
   it.each(cases)("renders %s results with the correct fallback label", async (category, label) => {
     const item = event(`${label} Live Event`);
     const loadEvents = vi.fn().mockResolvedValue([item]);
-    render(await PopularEventRow({ category, loadEvents }));
+    render(await PopularEventRow({ category, countryCode: "GB", loadEvents }));
 
     const card = screen.getByRole("article", { name: item.name });
     expect(card).toHaveTextContent(label);
     expect(card).toHaveTextContent("SAT, SEP 12 • 8:30 PM");
     expect(card).toHaveTextContent("Live Arena • Chicago, IL");
-    expect(loadEvents).toHaveBeenCalledExactlyOnceWith(category);
+    expect(loadEvents).toHaveBeenCalledExactlyOnceWith(category, "GB");
   });
 
   it.each(cases)("renders the %s empty state independently", async (category, _label, empty) => {
-    render(await PopularEventRow({ category, loadEvents: vi.fn().mockResolvedValue([]) }));
+    render(await PopularEventRow({ category, countryCode: "NZ", loadEvents: vi.fn().mockResolvedValue([]) }));
     expect(screen.getByRole("region", { name: empty })).toBeInTheDocument();
   });
 
   it.each(cases)("renders a generic %s error without provider internals", async (category) => {
     const loadEvents = vi.fn().mockRejectedValue(new Error("secret upstream response"));
-    render(await PopularEventRow({ category, loadEvents }));
+    render(await PopularEventRow({ category, countryCode: "IE", loadEvents }));
     expect(screen.getByRole("alert")).toHaveTextContent("temporarily unavailable");
     expect(screen.queryByText(/secret upstream response/i)).not.toBeInTheDocument();
   });
 
   it("keeps mixed category outcomes isolated", async () => {
     const outcomes = await Promise.all([
-      PopularEventRow({ category: "concerts", loadEvents: vi.fn().mockResolvedValue([event("Concert Success")]) }),
-      PopularEventRow({ category: "sports", loadEvents: vi.fn().mockRejectedValue(new Error("failed")) }),
-      PopularEventRow({ category: "arts-theater-comedy", loadEvents: vi.fn().mockResolvedValue([]) }),
-      PopularEventRow({ category: "family", loadEvents: vi.fn().mockResolvedValue([event("Family Success")]) }),
+      PopularEventRow({ category: "concerts", countryCode: "CA", loadEvents: vi.fn().mockResolvedValue([event("Concert Success")]) }),
+      PopularEventRow({ category: "sports", countryCode: "CA", loadEvents: vi.fn().mockRejectedValue(new Error("failed")) }),
+      PopularEventRow({ category: "arts-theater-comedy", countryCode: "CA", loadEvents: vi.fn().mockResolvedValue([]) }),
+      PopularEventRow({ category: "family", countryCode: "CA", loadEvents: vi.fn().mockResolvedValue([event("Family Success")]) }),
     ]);
     render(<>{outcomes}</>);
 

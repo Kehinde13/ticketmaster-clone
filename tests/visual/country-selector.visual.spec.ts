@@ -17,7 +17,12 @@ test("country selection persists and drives keyword search", async ({ page }) =>
   await expect(current()).toHaveAttribute("aria-label", "Change country, currently United States");
   await current().click();
   await expect(page.getByRole("dialog", { name: "Select your country" })).toBeVisible();
+  const gbRefresh = page.waitForRequest((request) => {
+    const url = new URL(request.url());
+    return url.pathname === "/" && (url.searchParams.has("_rsc") || request.headers().rsc === "1");
+  });
   await page.getByRole("button", { name: /United Kingdom/ }).click();
+  await gbRefresh;
   await expect(current()).toHaveAttribute("aria-label", "Change country, currently United Kingdom");
 
   await page.reload();
@@ -27,8 +32,14 @@ test("country selection persists and drives keyword search", async ({ page }) =>
   await expect.poll(() => requestCountries).toContain("GB");
 
   await current().click();
+  const usRefresh = page.waitForRequest((request) => {
+    const url = new URL(request.url());
+    return url.pathname === "/" && (url.searchParams.has("_rsc") || request.headers().rsc === "1");
+  });
   await page.getByRole("button", { name: /United States/ }).click();
+  await usRefresh;
   await expect.poll(() => requestCountries).toContain("US");
+  await expect(page.getByRole("searchbox", { name: "Search" })).toHaveValue("Coldplay");
   const viewport = page.viewportSize();
   if (!viewport) throw new Error("Country test requires a viewport.");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width);

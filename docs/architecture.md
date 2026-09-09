@@ -20,7 +20,7 @@ The mobile drawer owns category and global utility navigation. The mobile bottom
 
 The desktop shell uses a narrowly scoped Client Component header for the shared country selector while the root layout remains server-rendered. Mobile and desktop shells share a single responsive visibility boundary while keeping their different information structures independent.
 
-Country/market preference is distinct from event location. A validated cookie initializes `CountryProvider` on the server; both global affordances open the shared selector, and keyword search consumes its normalized country code.
+Country/market preference is distinct from event location. The server-only country helper validates the persisted cookie for both `CountryProvider` initialization and the Popular Near You page composition. Both global affordances open the shared selector; a real change persists the cookie, updates client state, and refreshes the Server Component tree once. Keyword search and each independent server event row then consume the same normalized country code through their existing API/provider boundaries.
 
 The App Router manifest owns installability metadata. Service-worker behavior is deferred until caching requirements are known; any future offline policy must distinguish static assets from freshness-sensitive and transactional data.
 

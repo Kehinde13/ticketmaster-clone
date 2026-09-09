@@ -1,10 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { cookies } from "next/headers";
 
 import { DesktopHeader } from "@/components/navigation/desktop-header";
 import { MobileBottomNavigation } from "@/components/navigation/mobile-bottom-navigation";
 import { MobileNavigation } from "@/components/navigation/mobile-navigation";
-import { COUNTRY_COOKIE_NAME, getSupportedCountry } from "@/lib/countries";
+import { getServerCountry } from "@/lib/countries.server";
 import "@/lib/env/server";
 
 import "./globals.css";
@@ -30,8 +29,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const initialCountry = getSupportedCountry(cookieStore.get(COUNTRY_COOKIE_NAME)?.value);
+  const initialCountry = await getServerCountry();
 
   return (
     <html lang="en">

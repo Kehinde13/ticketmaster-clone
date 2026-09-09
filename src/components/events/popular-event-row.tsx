@@ -8,6 +8,7 @@ import { EventTrack } from "@/components/events/event-track";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { loadPopularEvents } from "@/lib/api/events/discover";
+import type { CountryCode } from "@/lib/countries";
 import type { Event, EventCategory } from "@/types/event";
 
 const artworkByCategory: Readonly<Record<EventCategory, readonly string[]>> = {
@@ -47,7 +48,11 @@ const artworkByCategory: Readonly<Record<EventCategory, readonly string[]>> = {
 
 type PopularEventRowProps = {
   category: EventCategory;
-  loadEvents?: (category: EventCategory) => Promise<readonly Event[]>;
+  countryCode: CountryCode;
+  loadEvents?: (
+    category: EventCategory,
+    countryCode: CountryCode,
+  ) => Promise<readonly Event[]>;
 };
 
 const copy: Readonly<Record<EventCategory, { empty: string; unavailable: string }>> = {
@@ -59,13 +64,14 @@ const copy: Readonly<Record<EventCategory, { empty: string; unavailable: string 
 
 export async function PopularEventRow({
   category,
+  countryCode,
   loadEvents = loadPopularEvents,
 }: PopularEventRowProps) {
   await connection();
   let events: readonly Event[];
 
   try {
-    events = await loadEvents(category);
+    events = await loadEvents(category, countryCode);
   } catch {
     return (
       <ErrorState compact title={copy[category].unavailable} description="Please try again later." />

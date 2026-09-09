@@ -120,4 +120,4 @@ than contacting a provider. It deterministically serializes normalized
 cancellation, and exposes only the route's safe application error fields. The
 server route remains authoritative for search validation.
 
-Interactive keyword search supplies the validated country preference from `CountryProvider` as `countryCode`. Location, date, and category controls remain unwired. Popular Near You continues to use its existing US-scoped server path until Phase 5.2.
+Interactive keyword search supplies the validated country preference from `CountryProvider` as `countryCode`. Server-rendered Popular Near You reads the same persisted preference at the page boundary and passes it through every row to `loadPopularEvents(category, countryCode)`. Location, date, and category controls remain unwired.

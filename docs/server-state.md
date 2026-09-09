@@ -25,4 +25,4 @@ layer. URL shaping is client-owned, but validation remains server-authoritative.
 
 Query cache persistence is disabled. Account, ticket, and transactional data require a deliberate security and PWA caching design before any browser persistence is introduced.
 
-The non-sensitive country preference is separate from query-cache persistence. The server validates the `ticketmaster-country` cookie before initializing `CountryProvider`; submitted keyword queries include that selected code in `EventSearchParams`, naturally separating country-specific cache entries. Popular Near You remains server-rendered and US-scoped until Phase 5.2.
+The non-sensitive country preference is separate from query-cache persistence. The server validates the `ticketmaster-country` cookie before initializing `CountryProvider` and before loading Popular Near You. A real selection persists the cookie, updates client context, and calls `router.refresh()` once so Server Components use the new country without discarding active client search state. Submitted keyword queries include the selected code in `EventSearchParams`, naturally separating country-specific cache entries.

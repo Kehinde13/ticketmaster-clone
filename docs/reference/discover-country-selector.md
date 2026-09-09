@@ -17,3 +17,7 @@ Current Ticketmaster US public output confirms a global `United States selected,
 3. Multiple selected cues were visually noisy; the final treatment uses only one trailing checkmark plus `aria-current`.
 
 Dimensions are implementation values: 520px desktop width, 64px header, 48px search field, and minimum 56px country rows. Open-state dimensions remain approximate.
+
+## Country-aware server refresh
+
+A changed selection writes `ticketmaster-country`, updates `CountryProvider`, and invokes `router.refresh()`. The refreshed homepage validates the cookie server-side and supplies that country to all four Popular Near You rows. Selecting the active country performs no cookie write or refresh; keyword input and submitted search state remain client-owned across the Server Component refresh.
